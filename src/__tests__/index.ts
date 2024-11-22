@@ -235,8 +235,7 @@ describe("When it is a patch build", () => {
     createCommit(cwd);
     tag(`v1.20200512.2.0`, cwd);
     checkoutNewBranch(`release/v1.20200512.2`, cwd);
-
-    commandSync("git checkout main", { cwd });
+    commandSync("git checkout -b main", { cwd });
     createCommit(cwd);
     tag(`v1.20200512.3.0`, cwd);
 
@@ -390,5 +389,35 @@ describe("when patching with iterateOnScope set to true", () => {
 
     const tags = getTags(cwd);
     expect(tags[0]).toContain("scope/package/v1.20231211.1.2");
+  });
+
+  it("sorting of tag should be right when reaching the 10th patch", () => {
+    // Setup
+    const cwd = createNewRepo();
+
+    createCommit(cwd);
+    tag(`midgard/v1.20241113.10.9`, cwd);
+    tag(`midgard/v1.20241113.10.10`, cwd);
+
+    //Act
+    setVersion({ cwd, scopeTag: "midgard", patch: true });
+
+    const tags = getTags(cwd);
+    expect(tags[0]).toContain("midgard/v1.20241113.10.11");
+  });
+
+  it("sorting of tag should be right when reaching the 10th patch and there is a sub scope", () => {
+    // Setup
+    const cwd = createNewRepo();
+
+    createCommit(cwd);
+    tag(`test/package/v1.20241113.10.9`, cwd);
+    tag(`test/package/v1.20241113.10.10`, cwd);
+
+    //Act
+    setVersion({ cwd, scopeTag: "test/package", patch: true });
+
+    const tags = getTags(cwd);
+    expect(tags[0]).toContain("test/package/v1.20241113.10.11");
   });
 });

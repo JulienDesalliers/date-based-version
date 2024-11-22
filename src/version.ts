@@ -36,6 +36,15 @@ function getVersion(p1: number, p2: number, p3: number, p4: number): string {
   return `${p1}.${p2}.${p3}.${p4}`;
 }
 
+function parseVersionString(version: string): number[] {
+  const match = versionTagRegExp.exec(version);
+  if (!match) {
+    throw new Error("Invalid version string");
+  }
+  return match[0].slice(1).split('.').map(Number); // remove the 'v' and split by '.'
+}
+
+
 export function tryGetLatestVersion(
   cwd: string,
   scopeTag?: string
@@ -53,7 +62,12 @@ export function tryGetLatestVersion(
   const tag = linesWithCorrectVersionTags[0]
     .filter((t) => versionTagRegExp.test(t))
     .map((t) => versionTagRegExp.exec(t)[0])
-    .sort()
+    .sort( (a,b) => {
+        const [a1, a2, a3, a4] = parseVersionString(a);
+        const [b1, b2, b3, b4] = parseVersionString(b);
+        return a1 - b1 || a2 - b2 || a3 - b3 || a4 - b4;
+      }
+    )
     .reverse()[0];
   return parseVersion(tag);
 }
