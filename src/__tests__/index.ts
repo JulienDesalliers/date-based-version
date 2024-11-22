@@ -396,14 +396,14 @@ describe("when patching with iterateOnScope set to true", () => {
     const cwd = createNewRepo();
 
     createCommit(cwd);
-    tag(`midgard/v1.20241113.10.9`, cwd);
-    tag(`midgard/v1.20241113.10.10`, cwd);
+    tag(`test/v1.20241113.10.9`, cwd);
+    tag(`test/v1.20241113.10.10`, cwd);
 
     //Act
-    setVersion({ cwd, scopeTag: "midgard", patch: true });
+    setVersion({ cwd, scopeTag: "test", patch: true });
 
     const tags = getTags(cwd);
-    expect(tags[0]).toContain("midgard/v1.20241113.10.11");
+    expect(tags[0]).toContain("test/v1.20241113.10.11");
   });
 
   it("sorting of tag should be right when reaching the 10th patch and there is a sub scope", () => {
